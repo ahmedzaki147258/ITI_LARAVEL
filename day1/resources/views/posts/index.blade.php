@@ -1,3 +1,4 @@
+@php use Carbon\Carbon; @endphp
 <x-layout>
     <div class="text-center">
         <a href="{{ route('posts.create') }}"
@@ -25,7 +26,7 @@
                         <td class="px-4 py-2 font-medium whitespace-nowrap text-gray-900">{{ $post['id'] }}</td>
                         <td class="px-4 py-2 whitespace-nowrap text-gray-700">{{ $post['title'] }}</td>
                         <td class="px-4 py-2 whitespace-nowrap text-gray-700">{{ $post['user']['name']}}</td>
-                        <td class="px-4 py-2 whitespace-nowrap text-gray-700">{{ $post['created_at'] }}</td>
+                        <td class="px-4 py-2 whitespace-nowrap text-gray-700">{{ Carbon::parse($post['created_at'])->isoFormat('MMM Do YY') }}</td>
                         <td class="px-4 py-2 whitespace-nowrap text-gray-700 space-x-2">
                             <a href="{{ route('posts.show', $post['id']) }}"
                                class="inline-block px-4 py-1 text-xs font-medium text-white bg-blue-400 rounded hover:bg-blue-500">View</a>
@@ -48,7 +49,7 @@
         <div class="rounded-b-lg border-t border-gray-200 px-4 py-2">
             <ol class="flex justify-end gap-1 text-xs font-medium">
                 <li>
-                    <a href="#"
+                    <a href="{{ route('posts.index', ['page' => $currentPage > 1 ? $currentPage - 1 : 1]) }}"
                        class="inline-flex size-8 items-center justify-center rounded-sm border border-gray-100 bg-white text-gray-900">
                         <span class="sr-only">Prev Page</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="size-3" viewBox="0 0 20 20" fill="currentColor">
@@ -58,21 +59,18 @@
                         </svg>
                     </a>
                 </li>
+
+                @for($i = 1; $i <= $totalPages; $i++)
+                    <li>
+                        <a href="{{ route('posts.index', ['page' => $i]) }}"
+                           class="block size-8 rounded-sm border text-center leading-8
+                            {{ $i === $currentPage ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-100 bg-white text-gray-900 hover:bg-gray-50' }}">
+                            {{ $i }}</a>
+                    </li>
+                @endfor
+
                 <li>
-                    <a href="#"
-                       class="block size-8 rounded-sm border border-gray-100 bg-white text-center leading-8 text-gray-900">1</a>
-                </li>
-                <li class="block size-8 rounded-sm border-blue-600 bg-blue-600 text-center leading-8 text-white">2</li>
-                <li>
-                    <a href="#"
-                       class="block size-8 rounded-sm border border-gray-100 bg-white text-center leading-8 text-gray-900">3</a>
-                </li>
-                <li>
-                    <a href="#"
-                       class="block size-8 rounded-sm border border-gray-100 bg-white text-center leading-8 text-gray-900">4</a>
-                </li>
-                <li>
-                    <a href="#"
+                    <a href="{{ route('posts.index', ['page' => $currentPage < $totalPages ? $currentPage + 1 : $totalPages]) }}"
                        class="inline-flex size-8 items-center justify-center rounded-sm border border-gray-100 bg-white text-gray-900">
                         <span class="sr-only">Next Page</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="size-3" viewBox="0 0 20 20" fill="currentColor">

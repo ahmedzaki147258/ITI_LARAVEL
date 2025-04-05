@@ -33,8 +33,8 @@
                             class="font-normal">{{$post['user']['email']}}</span></h3>
                 </div>
                 <div>
-                    <h3 class="text-lg font-medium text-gray-800">Created At :- <span
-                            class="font-normal">{{ Carbon::parse($post['created_at'])->format('l jS \\of F Y h:i:s A') }}</span>
+                    <h3 class="text-lg font-medium text-gray-800">Created At :-
+                        <span class="font-normal">{{ Carbon::parse($post['created_at'])->isoFormat('MMMM Do YYYY, h:mm:ss a') }}</span>
                     </h3>
                 </div>
             </div>

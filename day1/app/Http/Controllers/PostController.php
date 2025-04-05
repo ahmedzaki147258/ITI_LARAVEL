@@ -7,31 +7,29 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class PostController extends Controller
-{
+class PostController extends Controller {
     use ApiResponseTrait;
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $posts = Post::with('user')->get();
-        return view('posts.index', ['posts' => $posts]);
+    public function index(Request $request): object {
+        $page = $request->query('page', 1);
+        $posts = Post::with('user')->paginate(17, ['*'], 'page', $page);
+        return view('posts.index', ['totalPages' => $posts->lastPage(), 'currentPage' => $posts->currentPage(), 'posts' => $posts->items()]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
+    public function create(): object {
         return view('posts.create', ['users' => User::all()]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
+    public function store(Request $request): object {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -52,10 +50,8 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        $post = Post::find($id);
-        return view('posts.show',[
+    public function show(Post $post): object {
+        return view('posts.show', [
             'post' => $post,
         ]);
     }
@@ -63,10 +59,9 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
-    {
+    public function edit(string $id): object {
         $post = Post::with('user')->find($id);
-        return view('posts.edit',[
+        return view('posts.edit', [
             'post' => $post,
             'users' => User::all(),
         ]);
@@ -75,12 +70,11 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
+    public function update(Request $request, string $id): object {
         $validator = Validator::make($request->all(), [
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'userId' => 'nullable|exists:users,id',
+            'title' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string',
+            'userId' => 'sometimes|exists:users,id',
         ]);
         if ($validator->fails()) {
             return $this->apiResponse((object)[], $validator->errors(), 404);
@@ -88,7 +82,7 @@ class PostController extends Controller
 
         $post = Post::find($id);
         if (!$post) {
-            return $this->apiResponse((object) [], 'The post not found', 404);
+            return $this->apiResponse((object)[], 'The post not found', 404);
         }
         $post->update($request->only(['title', 'description', 'userId']));
         return to_route('posts.index');
@@ -97,11 +91,10 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
+    public function destroy(string $id): object {
         $post = Post::find($id);
         if (!$post) {
-            return $this->apiResponse((object) [], 'The post not found', 404);
+            return $this->apiResponse((object)[], 'The post not found', 404);
         }
         $post->delete();
         return to_route('posts.index');
