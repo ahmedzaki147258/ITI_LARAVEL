@@ -51,6 +51,8 @@ class PostController extends Controller {
      * Display the specified resource.
      */
     public function show(Post $post): object {
+        $post->load('comments');
+//        return $this->apiResponse($post, '', 200);
         return view('posts.show', [
             'post' => $post,
         ]);
