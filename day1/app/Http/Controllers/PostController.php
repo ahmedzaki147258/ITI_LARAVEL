@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -29,20 +31,26 @@ class PostController extends Controller {
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): object {
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'userId' => 'required|exists:users,id',
-        ]);
-        if ($validator->fails()) {
-            return $this->apiResponse((object)[], $validator->errors(), 404);
+    public function store(StorePostRequest $request): object {
+//        $validator = Validator::make($request->all(), [
+//            'title' => 'required|string|max:255',
+//            'description' => 'required|string',
+//            'userId' => 'required|exists:users,id',
+//        ]);
+//        if ($validator->fails()) {
+//            return $this->apiResponse((object)[], $validator->errors(), 404);
+//        }
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('posts', 'public');
         }
 
         Post::create([
             'title' => $request->title,
             'description' => $request->description,
-            'userId' => $request->userId
+            'userId' => $request->userId,
+            'image' => $imagePath
         ]);
         return to_route('posts.index');
     }
@@ -72,20 +80,27 @@ class PostController extends Controller {
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id): object {
-        $validator = Validator::make($request->all(), [
-            'title' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string',
-            'userId' => 'sometimes|exists:users,id',
-        ]);
-        if ($validator->fails()) {
-            return $this->apiResponse((object)[], $validator->errors(), 404);
-        }
+    public function update(UpdatePostRequest $request, string $id): object {
+//        $validator = Validator::make($request->all(), [
+//            'title' => 'sometimes|string|max:255',
+//            'description' => 'sometimes|string',
+//            'userId' => 'sometimes|exists:users,id',
+//        ]);
+//        if ($validator->fails()) {
+//            return $this->apiResponse((object)[], $validator->errors(), 404);
+//        }
 
         $post = Post::find($id);
         if (!$post) {
             return $this->apiResponse((object)[], 'The post not found', 404);
         }
+        if ($request->hasFile('image')) {
+            if ($post->image) {
+                \Storage::disk('public')->delete($post->image);
+            }
+            $post->image = $request->file('image')->store('posts', 'public');
+        }
+
         $post->update($request->only(['title', 'description', 'userId']));
         return to_route('posts.index');
     }
@@ -98,6 +113,11 @@ class PostController extends Controller {
         if (!$post) {
             return $this->apiResponse((object)[], 'The post not found', 404);
         }
+        if ($post->image) {
+            \Storage::disk('public')->delete($post->image);
+        }
+
+        $post->comments()->delete();
         $post->delete();
         return to_route('posts.index');
     }

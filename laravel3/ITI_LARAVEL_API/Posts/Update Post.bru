@@ -1,0 +1,21 @@
+meta {
+  name: Update Post
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{LARAVEL_URL}}/api/posts/1
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: 1|VKbuuhkVVCJarZqeb8HQSKtLQYUHwQaHsyfAEVXH0a905494
+}
+
+body:json {
+  {
+    "title": "hello"
+  }
+}

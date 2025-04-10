@@ -1,0 +1,19 @@
+meta {
+  name: Sign UP
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{LARAVEL_URL}}/api/auth/signup
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "A7med zaki",
+    "email": "ahmedzaki2@gmail.com",
+    "password": "12345678"
+  }
+}

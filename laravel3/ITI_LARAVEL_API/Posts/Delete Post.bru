@@ -1,0 +1,15 @@
+meta {
+  name: Delete Post
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{LARAVEL_URL}}/api/posts/3
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: 1|VKbuuhkVVCJarZqeb8HQSKtLQYUHwQaHsyfAEVXH0a905494
+}

@@ -41,24 +41,29 @@ namespace App\Models{
  *
  * @property int $id
  * @property string $title
+ * @property string $slug
  * @property string $description
  * @property int $userId
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read User $user
- * @method static PostFactory factory($count = null, $state = [])
- * @method static Builder<static>|Post newModelQuery()
- * @method static Builder<static>|Post newQuery()
- * @method static Builder<static>|Post query()
- * @method static Builder<static>|Post whereCreatedAt($value)
- * @method static Builder<static>|Post whereDescription($value)
- * @method static Builder<static>|Post whereId($value)
- * @method static Builder<static>|Post whereTitle($value)
- * @method static Builder<static>|Post whereUpdatedAt($value)
- * @method static Builder<static>|Post whereUserId($value)
- * @mixin Eloquent
+ * @property string $image
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Comment> $comments
  * @property-read int|null $comments_count
+ * @property-read \App\Models\User $user
+ * @method static \Database\Factories\PostFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post findSimilarSlugs(string $attribute, array $config, string $slug)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post withUniqueSlugConstraints(\Illuminate\Database\Eloquent\Model $model, string $attribute, array $config, string $slug)
  */
 	class Post extends \Eloquent {}
 }

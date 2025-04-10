@@ -1,0 +1,20 @@
+meta {
+  name: Get Posts
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{LARAVEL_URL}}/api/posts
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~limit: 1
+  ~page: 2
+}
+
+auth:bearer {
+  token: 3|Nt2o3VaSefgS70aTfjzJ6LUw3Kob1s1o7r65Dlb7f9fc5e2e
+}

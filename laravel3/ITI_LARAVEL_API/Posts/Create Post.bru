@@ -1,0 +1,22 @@
+meta {
+  name: Create Post
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{LARAVEL_URL}}/api/posts
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: 2|CMATWp7QSH4R2VL2tAL1gsKntGxUkkAyOkELOm9p2ac1bcf4
+}
+
+body:json {
+  {
+    "title": "title3",
+    "body": "description3"
+  }
+}
