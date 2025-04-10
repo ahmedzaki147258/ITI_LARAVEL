@@ -2,7 +2,7 @@
 <x-layout>
     <div class="text-center">
         <a href="{{ route('posts.create') }}"
-           class="mt-4 px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+           class="create-post-btn mt-4 px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
             Create Post
         </a>
     </div>
@@ -26,18 +26,26 @@
                 @foreach ($posts as $post)
                     <tr>
                         <td class="px-4 py-2 font-medium whitespace-nowrap text-gray-900">{{ $post['id'] }}</td>
-                        <td class="px-4 py-2 whitespace-nowrap text-gray-700"><img src="{{ asset('storage/' . $post['image']) }}" alt="Image" class="w-15 h-15 rounded-full"></td>
+                        <td class="px-4 py-2 whitespace-nowrap text-gray-700"><img src="{{ asset('storage/' . $post['image']) }}" alt="Image" class="w-12 h-12 rounded-full"></td>
                         <td class="px-4 py-2 whitespace-nowrap text-gray-700">{{ $post['title'] }}</td>
                         <td class="px-4 py-2 whitespace-nowrap text-gray-700">{{ $post['slug'] }}</td>
                         <td class="px-4 py-2 whitespace-nowrap text-gray-700">{{ $post['user']['name']}}</td>
                         <td class="px-4 py-2 whitespace-nowrap text-gray-700">{{ Carbon::parse($post['created_at'])->isoFormat('MMM Do YY') }}</td>
                         <td class="px-4 py-2 whitespace-nowrap text-gray-700 space-x-2">
-                            <a href="{{ route('posts.show', $post['id']) }}"
-                               class="inline-block px-4 py-1 text-xs font-medium text-white bg-blue-400 rounded hover:bg-blue-500">View</a>
-                            <a href="{{ route('posts.edit', $post['id']) }}"
-                               class="inline-block px-4 py-1 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700">Edit</a>
-                            <button type="button" onclick="openDeleteModal({{ $post['id'] }}, '{{ $post['title'] }}')"
-                                    class="inline-block px-4 py-1 text-xs font-medium text-white bg-red-600 rounded hover:bg-red-700">
+                            <button type="button" 
+                                    data-post-id="{{ $post['id'] }}"
+                                    class="view-post-btn inline-block px-4 py-1 text-xs font-medium text-white bg-blue-400 rounded hover:bg-blue-500">
+                                View
+                            </button>
+                            <button type="button" 
+                                    data-post-id="{{ $post['id'] }}"
+                                    class="edit-post-btn inline-block px-4 py-1 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700">
+                                Edit
+                            </button>
+                            <button type="button" 
+                                    data-post-id="{{ $post['id'] }}"
+                                    data-post-title="{{ $post['title'] }}"
+                                    class="delete-post-btn inline-block px-4 py-1 text-xs font-medium text-white bg-red-600 rounded hover:bg-red-700">
                                 Delete
                             </button>
                         </td>
@@ -89,17 +97,39 @@
     </div>
 </x-layout>
 
+<!-- View/Edit/Create Dialog -->
+<div id="actionModal" class="relative z-10 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="w-full">
+                            <iframe id="actionFrame" class="w-full h-[600px] border-0"></iframe>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button type="button" onclick="closeActionModal()"
+                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="relative z-10 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
     <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <div
-                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
-                        <div
-                            class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
+                        <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
                             <svg class="size-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                  stroke="currentColor" aria-hidden="true" data-slot="icon">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -136,6 +166,16 @@
 </div>
 
 <script>
+    function openActionModal(url) {
+        document.getElementById('actionFrame').src = url;
+        document.getElementById('actionModal').classList.remove('hidden');
+    }
+
+    function closeActionModal() {
+        document.getElementById('actionModal').classList.add('hidden');
+        document.getElementById('actionFrame').src = '';
+    }
+
     function openDeleteModal(id, title) {
         document.getElementById('postTitle').innerText = title;
         document.getElementById('deleteForm').action = `/posts/${id}`;
@@ -145,4 +185,33 @@
     function closeDeleteModal() {
         document.getElementById('deleteModal').classList.add('hidden');
     }
+
+    // Event Listeners
+    document.querySelectorAll('.view-post-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            openActionModal(`/posts/${postId}`);
+        });
+    });
+
+    document.querySelectorAll('.edit-post-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            openActionModal(`/posts/${postId}/edit`);
+        });
+    });
+
+    document.querySelectorAll('.delete-post-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            const postTitle = this.dataset.postTitle;
+            openDeleteModal(postId, postTitle);
+        });
+    });
+
+    // Create button event listener
+    document.querySelector('.create-post-btn').addEventListener('click', function(e) {
+        e.preventDefault();
+        openActionModal(this.href);
+    });
 </script>

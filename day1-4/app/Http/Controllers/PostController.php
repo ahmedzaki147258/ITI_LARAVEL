@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class PostController extends Controller {
     use ApiResponseTrait;
@@ -17,9 +18,12 @@ class PostController extends Controller {
      * Display a listing of the resource.
      */
     public function index(Request $request): object {
-        $page = $request->query('page', 1);
-        $posts = Post::with('user')->paginate(17, ['*'], 'page', $page);
-        return view('posts.index', ['totalPages' => $posts->lastPage(), 'currentPage' => $posts->currentPage(), 'posts' => $posts->items()]);
+        // $page = $request->query('page', 1);
+        // $posts = Post::with('user')->paginate(17, ['*'], 'page', $page);
+        // return view('posts.index', ['totalPages' => $posts->lastPage(), 'currentPage' => $posts->currentPage(), 'posts' => $posts->items()]);
+        return Inertia::render('Posts/Index', [
+            'posts' => Post::with('user')->latest()->paginate(10)
+        ]);
     }
 
     /**

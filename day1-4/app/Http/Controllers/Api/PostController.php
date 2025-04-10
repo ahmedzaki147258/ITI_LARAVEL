@@ -47,7 +47,8 @@ class PostController extends Controller {
     /**
      * Display the specified resource.
      */
-    public function show(Post $post): Response {
+    public function show(Post $post)
+    {
         $post->load('user');
         return $this->apiResponse(new PostResource($post), 'ok', ResponseAlias::HTTP_OK);
     }
